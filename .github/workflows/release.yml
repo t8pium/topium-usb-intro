@@ -1,0 +1,22 @@
+name: Publish tagged Windows release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test and build
+        shell: pwsh
+        run: ./scripts/build_windows.ps1
+      - name: Publish release executable
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/TOPIUM-USB-INTRO.exe
+          generate_release_notes: true
