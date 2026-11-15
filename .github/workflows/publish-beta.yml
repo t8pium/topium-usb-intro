@@ -1,0 +1,35 @@
+name: Publish tested beta executable
+on:
+  workflow_run:
+    workflows: ["Test and build Windows application"]
+    types: [completed]
+permissions:
+  actions: read
+  contents: write
+jobs:
+  publish-beta:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Windows EXE from successful build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p dist
+          gh run download "$RUN_ID" --repo "$REPO" --name TOPIUM-USB-INTRO-Windows --dir dist
+          test -s dist/TOPIUM-USB-INTRO.exe
+          sha256sum dist/TOPIUM-USB-INTRO.exe
+      - name: Publish pre-release on GitHub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          COMMIT: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          TAG="v0.2.0-beta.1"
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "Pre-release $TAG already exists; leaving previous published binary unchanged."
+          else
+            gh release create "$TAG" dist/TOPIUM-USB-INTRO.exe --repo "$REPO" --target "$COMMIT" --title "TOPIUM USB INTRO v0.2.0 beta 1 (Windows)" --prerelease --notes "Automated Windows tests and PyInstaller build passed. This is a beta: USB insertion event auditing, the scheduled-task trigger, UAC behavior, and real GIF playback remain unverified on physical Windows hardware. Use the README and docs/windows_setup.md for setup and testing."
+          fi
