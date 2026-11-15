@@ -32,6 +32,8 @@ jobs:
                   if not entry.isfile() or not entry.name or path.is_absolute() or ".." in path.parts:
                       raise ValueError(f"Unsafe archive entry: {entry.name!r}")
               for entry in entries:
+                  if entry.name.startswith(".github/workflows/"):
+                      continue
                   target = pathlib.Path(entry.name)
                   target.parent.mkdir(parents=True, exist_ok=True)
                   target.write_bytes(archive.extractfile(entry).read())
@@ -42,7 +44,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm -f .staging/topium-usb-intro-v0.2.tar.xz.b64 .github/workflows/import-source.yml
+          git rm -f .staging/topium-usb-intro-v0.2.tar.xz.b64
           git add -A
           git commit -m "Publish TOPIUM USB INTRO v0.2.0 source" || exit 0
           git push origin HEAD:main
