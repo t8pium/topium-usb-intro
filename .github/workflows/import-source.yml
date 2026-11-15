@@ -9,12 +9,14 @@ permissions:
   contents: write
 jobs:
   import:
-    if: ${{ hashFiles('.staging/topium-usb-intro-v0.2.tar.xz.b64') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
+      - name: Confirm source bundle exists
+        id: check
+        run: test -f .staging/topium-usb-intro-v0.2.tar.xz.b64
       - name: Unpack verified project snapshot
         shell: bash
         run: |
