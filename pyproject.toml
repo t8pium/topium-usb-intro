@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "topium-usb-intro"
+version = "0.2.0"
+description = "Zero-resident-process Windows USB-drive welcome GIF and Explorer launcher"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{name = "TOPIUM contributors"}]
+dependencies = [
+  "PySide6>=6.7,<7",
+  "Pillow>=10,<13",
+  "WMI>=1.5,<2; sys_platform == 'win32'",
+  "pywin32>=306; sys_platform == 'win32'",
+]
+keywords = ["usb", "windows", "animation", "qt", "desktop"]
+classifiers = ["Programming Language :: Python :: 3", "Operating System :: Microsoft :: Windows"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+build = ["pyinstaller>=6,<8"]
+
+[project.scripts]
+topium-usb-intro = "topium_usb_intro.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+topium_usb_intro = ["assets/*.gif"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
