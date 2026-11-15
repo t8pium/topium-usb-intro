@@ -2,11 +2,11 @@
 
 Personalized GIF welcome overlay for **one registered USB drive on your own Windows 10/11 laptop**. Register the drive while it is **already connected**, select a GIF, and click **Enable automatic intro**. On a qualifying future insertion Windows starts a brief helper, plays the GIF **once**, optionally opens the drive's File Explorer window, then exits.
 
-**No TOPIUM background monitor, startup tray process, continuous polling, or idle custom-program RAM usage.** Windows' built-in Task Scheduler performs event triggering. **Only source code was built here; the Windows-triggered behavior and EXE are not yet hardware-verified.**
+**No TOPIUM background monitor, startup tray process, continuous polling, or idle custom-program RAM usage.** Windows' built-in Task Scheduler performs event triggering. **Windows CI built an executable successfully and passed its automated tests. The physical USB insertion trigger and visible GIF playback have not yet been verified on a user's laptop.**
 
 ## What the app looks like to a user
 
-1. Download `TOPIUM-USB-INTRO.exe` from the repository's **Releases**, once a Windows build has been published. It is a graphical Windows app; Python is *not* required to run the compiled executable.
+1. Download [**TOPIUM-USB-INTRO.exe (v0.2.0-beta.1)**](https://github.com/t8pium/topium-usb-intro/releases/download/v0.2.0-beta.1/TOPIUM-USB-INTRO.exe) from the verified GitHub beta release. It is a graphical Windows app; Python is *not* required to run the compiled executable.
 2. Double-click the EXE. Attach your USB drive **before opening the program** if you want it to appear in the selector.
 3. Choose the matching USB drive (model, label and drive letter displayed), click **Browse GIF**, and optionally set animation size/placement.
 4. Click **Preview GIF** to verify the animation without launching Explorer.
@@ -14,7 +14,7 @@ Personalized GIF welcome overlay for **one registered USB drive on your own Wind
 6. Close the app: no custom process remains. Safely eject/unplug your drive and reconnect it **while logged into your desktop**. If your system emits the required event, the animation plays and the Explorer window opens.
 7. To change drives or GIFs, reopen the EXE and save again. To stop triggering, click **Disable automatic intro**; it removes the task, leaving your GIF and other Windows auditing settings unchanged.
 
-**Important:** This is currently a **source-code release candidate**, not a confirmed ready-to-download Windows binary. The above is the intended Windows behavior; an actual laptop/USB hardware test and successful Windows build are required before calling it a verified release. There is no live GitHub repository created by the source ZIP.
+**Important:** The **Windows EXE is now downloadable** from the [beta release](https://github.com/t8pium/topium-usb-intro/releases/tag/v0.2.0-beta.1). Windows CI passed the automated tests and compiled the executable. Actual physical USB reconnection and animated desktop playback remain **untested**; this is a beta, not hardware-certified.
 
 ### How it works
 
@@ -79,7 +79,7 @@ On a **Windows 10/11 machine**:
 .\scripts\build_windows.ps1
 ```
 
-Expected output: `dist\TOPIUM-USB-INTRO.exe`. **This build and a real hardware insertion test have not been run in the Linux build environment.** After uploading the repository to GitHub, `.github/workflows/tests.yml` can build and attach an EXE artifact on Windows GitHub Actions; pushing a version tag such as `v0.2.0` triggers the release workflow to publish an EXE under GitHub **Releases** if the workflow succeeds.
+Expected output: `dist\TOPIUM-USB-INTRO.exe`. **GitHub Actions completed the Windows EXE build and automated test suite successfully** on 15 Nov 2026. The physical USB insertion test has not been run. The current downloadable binary is a [v0.2.0-beta.1 pre-release](https://github.com/t8pium/topium-usb-intro/releases/tag/v0.2.0-beta.1); the source-based Windows build instructions are still available for independent reproduction.
 
 ## Test before distributing
 
@@ -89,20 +89,13 @@ Expected output: `dist\TOPIUM-USB-INTRO.exe`. **This build and a real hardware i
 4. Verify Windows Task Scheduler shows the task with `Run only when user is logged on` and that no TOPIUM process remains when idle.
 5. Test both enable and disable and inspect logs in `%APPDATA%\TOPIUMUsbIntro\`.
 
-## GitHub publishing (when you have a repository)
+## GitHub repository and binary release
 
-```powershell
-git init
-git branch -M main
-git add .
-git commit -m "TOPIUM USB INTRO v0.2.0 event-triggered source"
-gh auth login
-gh repo create topium-usb-intro --public --source . --remote origin --push
-git tag v0.2.0
-git push origin v0.2.0
-```
+- [GitHub repository](https://github.com/t8pium/topium-usb-intro)
+- [Download TOPIUM-USB-INTRO.exe](https://github.com/t8pium/topium-usb-intro/releases/download/v0.2.0-beta.1/TOPIUM-USB-INTRO.exe)
+- [Windows build history](https://github.com/t8pium/topium-usb-intro/actions)
 
-Only publish after reviewing contents. The project does not contain your private GIF, USB identifiers or local configuration. If the GitHub connector is connected and authorized, repository creation and publishing can be performed directly; otherwise the source package and commands are the handoff.
+The beta binary was compiled on a GitHub-hosted Windows runner and is not code-signed. SmartScreen may display a warning. Verify the source and publisher before granting any requested UAC approval; the UAC step is only for registering the scheduled task and enabling device-event auditing.
 
 ## Security and references
 
